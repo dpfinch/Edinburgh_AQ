@@ -2,12 +2,12 @@
 # Module to read in and clean up AQ data from DEFRA
 # e.g. https://uk-air.defra.gov.uk/data/
 #==============================================================================
-# Import relevant modules
+# Uses modules:
+# datetime, numpy, pandas
 from datetime import datetime, timedelta
-import pandas as pd
-import numpy as np
+#import pandas as pd
+#import numpy as np
 #==============================================================================
-
 def open_csv(filepath):
     """
         This function reads in the CSV file and puts it into a pandas DataFrame.
@@ -22,11 +22,16 @@ def open_csv(filepath):
     # Needs datatype (dtype) as string since columns mix datatypes
     df =  pd.read_csv(filepath, skiprows = 4, dtype = str)
     # Get all the column names
-    column_names = df.coloumns
+    column_names = df.columns
     # Loop through each column and repace 'No Data' with NaNs
     # - easier to process into numbers not strings
     for column in column_names:
         df[column].replace('No Data', np.nan, inplace = True)
+        # In the time column replace the hour 24 with zero
+        # This is needed for pandas to convert to a datetime type
+        if column == 'Time':
+            df[column].replace('24:00:00', '00:00:00', inplace = True)
+
 
 
     return df
