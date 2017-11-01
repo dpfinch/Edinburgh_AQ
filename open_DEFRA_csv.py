@@ -28,6 +28,7 @@ def open_csv(filepath):
     for column in column_names:
         df[column].replace('No Data', np.nan, inplace = True)
 
+
     return df
 
 
