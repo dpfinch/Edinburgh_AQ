@@ -1,5 +1,9 @@
 #==============================================================================
 # Do simple plots through plot.ly, such as line plot, histogram, monthly means
+# Function names:
+#   lineplot()
+#   wind_rose_plot()
+#   species_histogram()
 #==============================================================================
 # Uses modules:
 # datetime, numpy, pandas, plot.ly, open_DEFRA_csv
@@ -12,17 +16,22 @@ import plotly.graph_objs as go
 #==============================================================================
 
 def line_plot(arg):
+    """
+        Produces a simple line plot of concentration against time.
+    """
     pass
 
 def wind_rose_plot(arg):
+    """
+        Procuduces a wind rose plot of wind speed and direction.
+    """
     pass
 
 def species_histogram(arg):
+    """
+        Produces a histogram of concentration of a species.
+    """
     pass
-
-def AQ_limits(arg):
-    pass
-
 
 
 if __name__ == '__main__':
