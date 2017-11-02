@@ -1,9 +1,7 @@
 #==============================================================================
-# Do simple plots through plot.ly, such as line plot, histogram, monthly means
+# Provide information on air quality standards and limits to use in comparisons
 # Function names:
-#   lineplot()
-#   wind_rose_plot()
-#   species_histogram()
+#
 #==============================================================================
 # Uses modules:
 # None

@@ -1,3 +1,8 @@
 ## Compiled python code ##
 ##########################
 *.pyc
+
+## Other files ##
+##########################
+notes.txt
+template.py
