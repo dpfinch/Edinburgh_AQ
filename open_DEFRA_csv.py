@@ -4,6 +4,7 @@
 # Function Names:
 #       open_csv(filename, skip_num_rows = 4)
 #       select_one_variable(variablename, filename = )
+#       purge_unverified()
 #==============================================================================
 # Uses modules:
 # datetime, numpy, pandas, os, sys
@@ -86,9 +87,25 @@ def select_one_variable(variablename, filename = 'ExampleData'):
         print "Unable to open %s \n File doesn't exist."
         sys.exit()
 
-
+    # Request all the data from the file
     all_data = open_csv(filename)
+
+    # Check if species requested is available, if not then exit
+    if species in all_data.columns:
+        date_and_time = all_data['Date and Time']
+
+    else:
+        print "%s is not avaible in the dataset. \n Exciting." % species
+        sys.exit()
+
+
     return species_data
+
+def purge_unverified(arg):
+    """
+        This function
+    """
+    pass
 
 if __name__ == '__main__':
     filename  = 'Example_Data/' \
