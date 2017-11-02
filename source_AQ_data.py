@@ -3,8 +3,9 @@
 # e.g. https://uk-air.defra.gov.uk/data/
 # Function Names:
 #       open_csv(filename, skip_num_rows = 4)
-#       select_one_variable(variablename, filename = )
+#       select_one_variable(variablename, filename = 'ExampleData')
 #       purge_unverified()
+#       list_availble_species(all_df_variables)
 #==============================================================================
 # Uses modules:
 # datetime, numpy, pandas, os, sys
@@ -90,13 +91,14 @@ def select_one_variable(variablename, filename = 'ExampleData'):
     # Request all the data from the file
     all_data = open_csv(filename)
 
-    # Check if species requested is available, if not then exit
+    # Check if species requested is available
     if species in all_data.columns:
         date_and_time = all_data['Date and Time']
 
+    # If species isn't available then call up list_availble_species
+    # This gives option to pick a species or exit program.
     else:
-        print "%s is not avaible in the dataset. \n Exciting." % species
-        sys.exit()
+        list_availble_species(all_data.columns)
 
 
     return species_data
@@ -110,11 +112,73 @@ def purge_unverified(arg):
         (eg. wind speed) as all this is not verified because its not a physical
         measurement.
         Function IN:
-            The dataframe
-
+            The pandas DataFrame that is to be ammended.
         Function OUT:
+            The same DataFrame but with unverified values replaced with NaNs
     """
     pass
+
+def list_availble_species(all_df_variables):
+    """
+        This functions lists all the species that are avaible for analysis.
+        It requires a user input to pick a species, or write the name.
+        The user may also exit the program if they wish.
+        Function IN:
+            all_df_variables(REQUIRED, LIST):
+                A list of all the column (variable) names from the pandas
+                dataframe which will be cleaned and printed.
+        Function OUT:
+            chosen_species:
+                The species chosen by the user as string (ie 'PM2.5')
+    """
+    # Create empty list for species you can choose to go into
+    species_list = []
+    # Create list of names not wanted (ie stuff that isn't species)
+    # This is an inelegant way of doing this but I can't think of another way
+    # This list can be added to if need be
+    not_species = ['Date','Time', 'Date and Time','Status']
+    # Add all chooseable species to a list
+    for names in all_df_variables:
+        if names.split('.')[0] in not_species:
+            continue
+        species_list.append(names)
+    # Print out all the options with corresponding number
+    print 'Availble variables to choose from file: \n'
+    for x, names in enumerate(species_list):
+        print '%d) %s' % (x + 1, names)
+
+    # Get user to pick species, keep in a loop until something availble is
+    # chosen or 'q' is chosen to exit program.
+    species_avail = False
+    while not species_avail:
+        print 'Pick a number from above or type variable (case sensitive):'
+        print "Type 'q' to exit."
+        user_choice = raw_input('--> ')
+        # Test if integer or string.
+        try:
+            int(user_choice)
+            if int(user_choice) < 1:
+                print "%d is out of range." % int(user_choice)
+                continue
+            number_choice = int(user_choice) - 1 # Need to subtract for python index
+            try:
+                chosen_species = species_list[number_choice]
+                species_avail = True
+            except IndexError:
+                print "%d is out of range." % int(user_choice)
+        except ValueError:
+            # If 'q' then exit.
+            if user_choice == 'q':
+                sys.exit()
+            # If user choice is in the species_list then we're cooking.
+            elif user_choice in species_list:
+                chosen_species = user_choice
+                species_avail = True
+            else:
+                # If it doesn't match anything send them round again.
+                print "Species not availble (captials must match)"
+
+    return chosen_species
 
 if __name__ == '__main__':
     filename  = 'Example_Data/' \
