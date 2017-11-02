@@ -4,3 +4,5 @@ Here is some useful info:
   The data used by this program is CSV files from DEFRA.
   They are availble here:
   https://uk-air.defra.gov.uk/data/
+  Currently uses the 'all measurements' variable from this website. Not sure
+  how it'd work if you tried something else like 8-hour mean.
