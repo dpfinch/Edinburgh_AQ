@@ -16,14 +16,32 @@ import plotly.plotly as py
 import plotly.graph_objs as go
 #==============================================================================
 
-def line_plot(species):
+def line_plot(species,filename = 'ExampleData', average = 'None',
+    verfied = True):
     """
         Produces a simple line plot of concentration against time.
+        Function IN:
+            species (REQUIRED, STRING):
+                The name of the species you want to plot.
+            filename(OPTIONAL, STRING):
+                The name of the raw data file, if left it just uses
+                example data
+            average(OPTIONAL, STRING):
+                Choose what type of averaging to use. Choices are None (default),
+                8-hour, daily, weekly, monthly
+            verfied(OPTIONAL, BOOLEAN):
+                Choose whether to plot just verfied data or all data.
+                Default = True
     """
-    # Check to make sure species name fit the format, ie first letter
-    # captial, the following lower case
-    species = species.captialize()
+    # Get the data for the species required. Also include the filename
+    # if the filename is provided - use example data if not.
+    species_data = source_AQ_data.select_one_variable(species, filename)
 
+    # If just using verfied data then purge unverified data
+    if verfied:
+        species_data = source_AQ_data.purge_unverified(species_data)
+
+    
 
     pass
 
@@ -46,8 +64,7 @@ def monthly_box_plots(arg):
     pass
 
 if __name__ == '__main__':
-    filename  = 'Example_Data/' \
-                    + 'edinburgh_st_leonards_2015_2017.csv'
+    data = source_AQ_data.select_one_variable('Ozone')
 
 ## ============================================================================
 ## END OF PROGAM
