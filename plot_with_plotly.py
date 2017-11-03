@@ -41,7 +41,7 @@ def line_plot(species,filename = 'ExampleData', average = 'None',
     if verfied:
         species_data = source_AQ_data.purge_unverified(species_data)
 
-    
+    data = [x = species_data.index, y = species_data[species]]
 
     pass
 
