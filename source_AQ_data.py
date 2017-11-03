@@ -61,7 +61,7 @@ def open_csv(filepath, skip_num_rows = 4):
 
     return df
 
-def select_one_variable(variablename, filename = 'ExampleData'):
+def select_one_variable(variablename = 'species', filename = 'ExampleData'):
     """
         This function reduces the entire data set down to just the species/
         variable that is wanted for a particular analysis. eg. just NO2.
@@ -80,7 +80,7 @@ def select_one_variable(variablename, filename = 'ExampleData'):
     # If the filename is not set, then use the example data provided
     if filename == 'ExampleData':
         filename = 'Example_Data/edinburgh_st_leonards_2015_2017.csv'
-        print "No file specified. Using data from: %s" % filename
+        print "No file specified. Using data from: %s \n" % filename
 
     # Check to see whether file  & path exists
     # If it doesn't exist, print warning and exit
@@ -91,15 +91,30 @@ def select_one_variable(variablename, filename = 'ExampleData'):
     # Request all the data from the file
     all_data = open_csv(filename)
 
-    # Check if species requested is available
-    if species in all_data.columns:
-        date_and_time = all_data['Date and Time']
+    # Check if species requested is available, if not then call user to
+    # pick one that is
+    if variablename not in all_data.columns:
+        variablename = list_availble_species(all_data.columns)
 
-    # If species isn't available then call up list_availble_species
-    # This gives option to pick a species or exit program.
+    date_and_time = all_data['Date and Time']
+    species_data = all_data[variablename]
+    # Need to find the location of the variablename in the list of
+    # DataFrame columns - because the one after it is the 'status' that
+    # related the that species
+    var_location = np.where(all_data.columns == variablename)
+    variable_status_name = all_data.columns[np.squeeze(var_location) + 1]
+    variable_status = all_data[variable_status_name]
+    # Split the status column into 'verified' and 'units'
+    # First test to see how if there is any other info in this colum
+    # (like '(TEOM FDMS)' - I assume this is an instrument name)
+    if len(variable_status[0].split()) > 2:
+        verified, units, other = variable_status.str.split(' ',2).str
     else:
-        list_availble_species(all_data.columns)
+        verified, units = variable_status.str.split(' ',1).str
 
+    # Put all the data back into one DataFrame
+    species_data = pd.DataFrame({'Date and Time':date_and_time,
+        variablename:species_data,'Unit':units,'Verified':verified})
 
     return species_data
 
@@ -157,6 +172,7 @@ def list_availble_species(all_df_variables):
         # Test if integer or string.
         try:
             int(user_choice)
+            # Check its not a zero or below
             if int(user_choice) < 1:
                 print "%d is out of range." % int(user_choice)
                 continue
