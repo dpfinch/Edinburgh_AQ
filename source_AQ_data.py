@@ -1,5 +1,5 @@
 #==============================================================================
-# Module to read in and clean up AQ data from DEFRA
+# Module to read in and clean up AQ data from DEFRA in their standard csv file.
 # e.g. https://uk-air.defra.gov.uk/data/
 # Function Names:
 #       open_csv(filename, skip_num_rows = 4)
@@ -85,7 +85,7 @@ def select_one_variable(variablename = 'species', filename = 'ExampleData'):
     # Check to see whether file  & path exists
     # If it doesn't exist, print warning and exit
     if not os.path.exists(filename):
-        print "Unable to open %s \n File doesn't exist."
+        print "Unable to open %s \n File doesn't exist." % filename
         sys.exit()
 
     # Request all the data from the file
@@ -116,9 +116,12 @@ def select_one_variable(variablename = 'species', filename = 'ExampleData'):
     species_data = pd.DataFrame({'Date and Time':date_and_time,
         variablename:species_data,'Unit':units,'Verified':verified})
 
+    # Make the DataFrame index be data and time instead of just a count
+    species_data.index = species_data.pop('Date and Time')
+
     return species_data
 
-def purge_unverified(arg):
+def purge_unverified(species_data):
     """
         This function removes any measurements that have not been verfied.
         This is indicated by a V (verfied), N (not verified), P (provisional),
@@ -127,11 +130,18 @@ def purge_unverified(arg):
         (eg. wind speed) as all this is not verified because its not a physical
         measurement.
         Function IN:
-            The pandas DataFrame that is to be ammended.
+            The pandas DataFrame that is to be ammended
+            (has to have 'Verified' column in DataFrame)
         Function OUT:
             The same DataFrame but with unverified values replaced with NaNs
     """
-    pass
+    if species.split()[0] == 'Modelled':
+        print "Using all data as this data is modelled."
+        return species_data
+    else:
+        verfied_data = species_data['Verified' == 'V']
+        return verfied_data
+    
 
 def list_availble_species(all_df_variables):
     """
