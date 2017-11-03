@@ -44,6 +44,10 @@ def open_csv(filepath, skip_num_rows = 4):
         df[column].replace('No data', np.nan, inplace = True)
         # In the time column replace the hour 24 with zero
         # This is needed for pandas to convert to a datetime type
+        # This creates an error in the data as the value for 00:00:00 in then
+        # placed at the beginning of the day instead of the end. ie. It should
+        # changed to 00:00:00 and the date moved forward one day. This is
+        # recitifed later.
         if column == 'Time':
             df[column].replace('24:00:00', '00:00:00', inplace = True)
         # Find if the column is a status column or date/time column, if it
@@ -58,8 +62,24 @@ def open_csv(filepath, skip_num_rows = 4):
 
     # Add a new column using both date and time into a datetime format
     df['Date and Time'] = pd.to_datetime(df['Date'] + ' ' + df['Time'])
-
+    df['Date and Time'] = df['Date and Time'].apply(add_day)
     return df
+
+def add_day(timestamp):
+    """
+        This functions fixes the errror in the timeseries where converting the
+        the hour '24:00:00' to '00:00:00' put the time at the beginning of the
+        day instead of the end. It basically just adds a day where the hour == 0
+        Function IN:
+            timestap(REQUIRED, DATETIME)
+        Function OUT:
+            timestap(DATETIME)
+    """
+    if timestamp.hour == 0:
+        timestamp = timestamp + timedelta(days = 1 )
+    return timestamp
+
+
 
 def select_one_variable(variablename = 'species', filename = 'ExampleData'):
     """
@@ -141,7 +161,7 @@ def purge_unverified(species_data):
     else:
         verfied_data = species_data['Verified' == 'V']
         return verfied_data
-    
+
 
 def list_availble_species(all_df_variables):
     """
