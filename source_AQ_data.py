@@ -51,7 +51,7 @@ def open_csv(filepath, skip_num_rows = 4):
         if column == 'Time':
             df[column].replace('24:00:00', '00:00:00', inplace = True)
         # Find if the column is a status column or date/time column, if it
-        # is the then go to next iteration, if its not then turn that value
+        # is then go to next iteration, if its not then turn that value
         # from a string into a float
         if column.split('.')[0] == 'Status':
             continue
@@ -139,9 +139,9 @@ def select_one_variable(variablename = 'species', filename = 'ExampleData'):
     # Make the DataFrame index be data and time instead of just a count
     species_data.index = species_data.pop('Date and Time')
 
-    return species_data
+    return species_data, variablename
 
-def purge_unverified(species_data):
+def purge_unverified(species_data, variablename):
     """
         This function removes any measurements that have not been verfied.
         This is indicated by a V (verfied), N (not verified), P (provisional),
@@ -155,11 +155,12 @@ def purge_unverified(species_data):
         Function OUT:
             The same DataFrame but with unverified values replaced with NaNs
     """
-    if species.split()[0] == 'Modelled':
+
+    if variablename.split()[0] == 'Modelled':
         print "Using all data as this data is modelled."
         return species_data
     else:
-        verfied_data = species_data['Verified' == 'V']
+        verfied_data = species_data.loc[species_data['Verified'] == 'V']
         return verfied_data
 
 
