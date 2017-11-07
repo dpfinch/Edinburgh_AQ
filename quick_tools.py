@@ -8,6 +8,7 @@
 # Uses modules:
 # math
 import math
+import brewer2mpl
 #==============================================================================
 
 
@@ -43,13 +44,29 @@ def round_up(in_num, base = 10):
 
     return rounded_num
 
+def get_colours_rgb(num_colours = 8):
+    """
+        Return an array of colours as an RGB string to use - the size of array
+        depends on requested by the user.
+        Function IN:
+            num_colours (OPTIONAL, INTEGER ):
+                The number of colours needed (default = 8)
+        Fucntion OUT:
+            colour_array:
+                An an array containing the number of colours requested as
+                RGB string.
+    """
 
-if __name__ == '__main__':
-    # If the module needs testing as a stand alone, use this to set the
-    # paramters
-    filename  = 'Example_Data/' \
-                    + 'edinburgh_st_leonards_2015_2017.csv'
-    fname(filename)
+    bmap = brewer2mpl.get_map('Blues', 'Sequential', 9)
+    colour_array = []
+    # Loop through all the colours and make them a string
+    for cols in bmap:
+        R = col[0]
+        G = col[1]
+        B = col[2]
+        colour_array.append('rgb(%d,%d,%d)') % (R,G,B)
+    return colour_array
+
 ## ============================================================================
 ## END OF PROGAM
 ## ============================================================================
