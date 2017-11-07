@@ -57,7 +57,7 @@ def get_colours_rgb(num_colours = 8):
                 RGB string.
     """
 
-    bmap = brewer2mpl.get_map('Blues', 'Sequential', 9)
+    bmap = brewer2mpl.get_map('Blues', 'Sequential', num_colours)
     colour_array = []
     # Loop through all the colours and make them a string
     for cols in bmap:
