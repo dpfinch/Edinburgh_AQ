@@ -7,13 +7,14 @@
 #   monthly_box_plots()
 #==============================================================================
 # Uses modules:
-# datetime, numpy, pandas, plot.ly, open_DEFRA_csv
+# datetime, numpy, pandas, plot.ly, source_AQ_data, windrose
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import source_AQ_data
 import plotly.plotly as py
 import plotly.graph_objs as go
+import windrose
 #==============================================================================
 
 def timeseries_plot(species='None',filename = 'ExampleData', average = 'None',
@@ -60,10 +61,30 @@ def timeseries_plot(species='None',filename = 'ExampleData', average = 'None',
 
     pass
 
-def wind_rose_plot(arg):
+def wind_rose_plot(filename = 'ExampleData'):
     """
         Procuduces a wind rose plot of wind speed and direction.
+        Function IN:
+            filename (OPTIONAL, STRING):
+                The filename of a csv file where this data is kept. If not
+                provided then uses the example file.
     """
+
+    # Get the wind direction and the wind speed from the file
+    wd, wd_name = source_AQ_data.select_one_variable('Modelled Wind Direction',
+        filename = filename, verfied = False)
+    ws, ws_name = source_AQ_data.select_one_variable('Modelled Wind Speed',
+        filename = filename, verfied = False)
+
+    # Combine the two DataFrames
+    wind = pd.concat([wd,ws], axis = 1)
+    # Drop NaNs
+    wind.dropna(inplace = True)
+
+    # Format the windspeeds and directions into windrose format
+    windrose_data = windrose.windrose(wind['Modelled Wind Speed'],
+        wind['Modelled Wind Direction'], bins = 16)
+
     pass
 
 def species_histogram(arg):
