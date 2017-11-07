@@ -4,6 +4,7 @@
 # Function names:
 #   round_nearest(num_in)
 #   round_up(num_in)
+#   get_colours_rgb(num_colours)
 #==============================================================================
 # Uses modules:
 # math
@@ -60,11 +61,11 @@ def get_colours_rgb(num_colours = 8):
     bmap = brewer2mpl.get_map('Blues', 'Sequential', num_colours)
     colour_array = []
     # Loop through all the colours and make them a string
-    for cols in bmap:
+    for col in reversed(bmap.colors):
         R = col[0]
         G = col[1]
         B = col[2]
-        colour_array.append('rgb(%d,%d,%d)') % (R,G,B)
+        colour_array.append('rgb(%d,%d,%d)' % (R,G,B) )
     return colour_array
 
 ## ============================================================================

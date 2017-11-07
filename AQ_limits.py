@@ -4,13 +4,15 @@
 #
 #==============================================================================
 # Uses modules:
-# None
+# quick_tools
+import quick_tools
 #==============================================================================
 
-def AQ_limits(arg):
+def AQ_limits():
     """
         Provides the safe limits & air quality aims for a given species.
     """
+    print quick_tools.get_colours_rgb()
     pass
 
 

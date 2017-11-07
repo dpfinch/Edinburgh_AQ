@@ -9,7 +9,7 @@
 import numpy as np
 import sys
 import pandas as pd
-import quick_tools
+import quick_tools import round_up
 #==============================================================================
 
 def windrose(windspeed, winddirection, direction_bin_size = 8,
@@ -56,7 +56,7 @@ def windrose(windspeed, winddirection, direction_bin_size = 8,
     # Make a limit for the wind speed bins (ie 25 if max speed is 22).
     # Will round up to the nearest 5. Although this can be adjustested.
     round_base = speed_bin_size
-    wind_limit = quick_tools.round_up(wind_max, base = round_base)
+    wind_limit = round_up(wind_max, base = round_base)
     # Make bins for the wind speed
     speed_bins = np.arange(0, wind_limit + round_base, round_base)
 

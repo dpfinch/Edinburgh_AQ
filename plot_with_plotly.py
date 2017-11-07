@@ -7,14 +7,14 @@
 #   monthly_box_plots()
 #==============================================================================
 # Uses modules:
-# datetime, numpy, pandas, plot.ly, source_AQ_data, windrose
+# datetime, numpy, pandas, plot.ly, source_AQ_data, windrose, quick_tools
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import source_AQ_data
 import plotly.plotly as py
 import plotly.graph_objs as go
-import windrose
+import quick_tools
 #==============================================================================
 
 def timeseries_plot(species='None',filename = 'ExampleData', average = 'None',
@@ -69,12 +69,14 @@ def wind_rose_plot(filename = 'ExampleData'):
                 The filename of a csv file where this data is kept. If not
                 provided then uses the example file.
     """
+    # Import the windrose module
+    from windrose import windrose
 
     # Get the wind direction and the wind speed from the file
     wd, wd_name = source_AQ_data.select_one_variable('Modelled Wind Direction',
-        filename = filename, verfied = False)
+        filename = filename)
     ws, ws_name = source_AQ_data.select_one_variable('Modelled Wind Speed',
-        filename = filename, verfied = False)
+        filename = filename)
 
     # Combine the two DataFrames
     wind = pd.concat([wd,ws], axis = 1)
@@ -82,8 +84,38 @@ def wind_rose_plot(filename = 'ExampleData'):
     wind.dropna(inplace = True)
 
     # Format the windspeeds and directions into windrose format
-    windrose_data = windrose.windrose(wind['Modelled Wind Speed'],
-        wind['Modelled Wind Direction'], bins = 16)
+    dirc_bins = 8
+    speed_bins = 4
+    windrose_data, speed_bin_names = windrose(wind['Modelled Wind Speed'],
+        wind['Modelled Wind Direction'], direction_bin_size = dirc_bins,
+        speed_bin_size = speed_bins)
+
+
+    # Make each circle of the windrose a "trace" for plot.ly
+    colours = quick_tools.get_colours_rgb(num_colours = len(speed_bin_names))
+    # Need to do it in reverse order so the larger ones don't cover the smaller
+    trace_dict = {}
+    finished_data = []
+    for x,sn in enumerate(reversed(speed_bin_names)):
+        trace_dict[sn] = go.Area(
+            r = windrose_data[sn],
+            t = windrose_data['Direction'],
+            name = sn,
+            marker = dict(color=colours[x]))
+
+        finished_data.append(trace_dict[sn])
+
+    # Set the layout options
+    layout = go.Layout(
+        title = 'Wind Speed Distribution at Edinburgh St Leonards',
+        font = dict(size = 16),
+        legend = dict(font = dict(size = 16)),
+        radialaxis = dict(ticksuffix = '%'),
+        orientation = 270)
+
+    filename = 'Wind Speed Distribution at Edinburgh St Leonards'
+    fig = go.Figure(data = finished_data, layout = layout)
+    py.plot(fig, filename = filename)
 
     pass
 
