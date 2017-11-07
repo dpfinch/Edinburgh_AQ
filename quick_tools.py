@@ -26,7 +26,7 @@ def round_nearest(in_num, base = 10):
     rounded_num = int(base * round(float(in_num)/base))
     return rounded_num
 
-def roun_up(in_num, base = 10):
+def round_up(in_num, base = 10):
     """
         Round a number up to the nearest specified whole number (ie 3 -> 10)
         Function IN:
@@ -39,7 +39,7 @@ def roun_up(in_num, base = 10):
                 The rounded number.
     """
 
-    rounded_num = int(math.ceil(float(in_num) / base) * base
+    rounded_num = int(math.ceil(float(in_num) / base)) * base
 
     return rounded_num
 
