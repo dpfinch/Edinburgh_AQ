@@ -5,9 +5,11 @@
 #   wind_rose_plot()
 #   species_histogram()
 #   monthly_box_plots()
+#   hourly_box_plots()
 #==============================================================================
 # Uses modules:
-# datetime, numpy, pandas, plot.ly, source_AQ_data, windrose, quick_tools
+# datetime, numpy, pandas, plot.ly, source_AQ_data, windrose, quick_tools,
+# calendar
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
@@ -15,10 +17,11 @@ import source_AQ_data
 import plotly.plotly as py
 import plotly.graph_objs as go
 import quick_tools
+import calendar
 #==============================================================================
 
 def timeseries_plot(species='None',filename = 'ExampleData', average = 'None',
-    verfied = True):
+    verified = True):
     """
         Produces a simple line plot of concentration against time.
         Function IN:
@@ -40,7 +43,7 @@ def timeseries_plot(species='None',filename = 'ExampleData', average = 'None',
     species_data, variablename = source_AQ_data.select_one_variable(species, filename)
 
     # If just using verfied data then purge unverified data
-    if verfied:
+    if verified:
         species_data = source_AQ_data.purge_unverified(species_data, variablename)
 
     # Set the data in a format the plot.ly needs to work
@@ -125,11 +128,117 @@ def species_histogram(arg):
     """
     pass
 
-def monthly_box_plots(arg):
+def monthly_box_plots(filename = 'ExampleData', species='None',
+    verified = True):
     """
         Produces box plots of mean, std dev, percentiles of species per month.
+        Function IN:
+            filename (OPTIONAL, STRING):
+                The filepath and name where the csv file is stored. If not path
+                is given the the example data is used.
+            species (OPTIONAL, STRING):
+                The species you wish to plot. If this is left as 'None' then it
+                will go to the selecting tool. (Will also do this if the species
+                written is not available.)
+            verified (OPTIONAL, BOOLEAN):
+                Choose whether to use all the data (False) or just the verified
+                data (True). Default is True.
     """
+
+
+    # Get the data for the species required. Also include the filename
+    # if the filename is provided - use example data if not.
+    # Also returns variable name (this might be changed slightly from user input)
+    species_data, variablename = source_AQ_data.select_one_variable(species, filename)
+
+    # If just using verfied data then purge unverified data
+    if verified:
+        species_data = source_AQ_data.purge_unverified(species_data, variablename)
+
+    # Get a list of months
+    month_names = [calendar.month_name[x] for x in range(1,13)]
+
+    # Create dictionary with each month as a key containing all monthly data
+    monthly_dict = {}
+    for n,month in enumerate(month_names):
+        monthly_dict[month] = species_data.loc[species_data.index.month == (n + 1)]
+
+    # Create list to put in the plot.ly traces and combine them
+    # to send to plot.ly
+    box_data = []
+    for x, month in enumerate(month_names):
+        box_data.append( go.Box(
+            y = monthly_dict[month][variablename].values,
+            name = month))
+
+    layout = go.Layout(
+        yaxis = dict( title = variablename + ' ' + species_data.Unit[0]),
+        showlegend = False,
+        title = 'Monthly Averages for '+ variablename +' at Edinburgh St Leonards')
+
+    # Create filename and send to plot.ly
+    filename = 'Box Plot of Monthly Average %s' % variablename
+    fig = go.Figure(data = box_data, layout = layout)
+    py.plot(fig, filename = filename)
+
     pass
+
+def hourly_box_plots(filename = 'ExampleData', species = 'None', verified = True):
+    """
+        Produces box plots of mean, std dev, percentiles of species for
+        hour of the day.
+        Function IN:
+            filename (OPTIONAL, STRING):
+                The filepath and name where the csv file is stored. If not path
+                is given the the example data is used.
+            species (OPTIONAL, STRING):
+                The species you wish to plot. If this is left as 'None' then it
+                will go to the selecting tool. (Will also do this if the species
+                written is not available.)
+            verified (OPTIONAL, BOOLEAN):
+                Choose whether to use all the data (False) or just the verified
+                data (True). Default is True.
+    """
+
+    # Get the data for the species required. Also include the filename
+    # if the filename is provided - use example data if not.
+    # Also returns variable name (this might be changed slightly from user input)
+    species_data, variablename = source_AQ_data.select_one_variable(species, filename)
+
+    # If just using verfied data then purge unverified data
+    if verified:
+        species_data = source_AQ_data.purge_unverified(species_data, variablename)
+
+    # Get a list of hours
+    hour_names = [x for x in range(24)]
+
+    # Create dictionary with each month as a key containing all monthly data
+    hourly_dict = {}
+    for n,hour in enumerate(hour_names):
+        hourly_dict[hour] = species_data.loc[species_data.index.hour == (n)]
+
+    # Create list to put in the plot.ly traces and combine them
+    # to send to plot.ly
+    box_data = []
+    for x, hour in enumerate(hour_names):
+        box_data.append( go.Box(
+            y = hourly_dict[hour][variablename].values,
+            name = str(hour).zfill(2)))
+
+    layout = go.Layout(
+        yaxis = dict( title = variablename + ' ' + species_data.Unit[0]),
+        xaxis = dict( title = 'Hour of the Day'),
+        showlegend = False,
+        title = 'Hourly Averages for '+ variablename +' at Edinburgh St Leonards')
+
+    # Create filename and send to plot.ly
+    filename = 'Box Plot of Hourly Average %s' % variablename
+    fig = go.Figure(data = box_data, layout = layout)
+    py.plot(fig, filename = filename)
+
+
+    pass
+
 
 if __name__ == '__main__':
     #data = source_AQ_data.select_one_variable('Ozone')
