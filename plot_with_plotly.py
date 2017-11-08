@@ -132,8 +132,8 @@ def monthly_box_plots(arg):
     pass
 
 if __name__ == '__main__':
-    data = source_AQ_data.select_one_variable('Ozone')
-
+    #data = source_AQ_data.select_one_variable('Ozone')
+    wind_rose_plot()
 ## ============================================================================
 ## END OF PROGAM
 ## ============================================================================

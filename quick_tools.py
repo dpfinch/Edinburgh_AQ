@@ -12,7 +12,6 @@ import math
 import brewer2mpl
 #==============================================================================
 
-
 def round_nearest(in_num, base = 10):
     """
         Round a number to the nearest specified whole number (ie 8.7 -> 10)

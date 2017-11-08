@@ -9,7 +9,7 @@
 import numpy as np
 import sys
 import pandas as pd
-import quick_tools import round_up
+from quick_tools import round_up
 #==============================================================================
 
 def windrose(windspeed, winddirection, direction_bin_size = 8,
