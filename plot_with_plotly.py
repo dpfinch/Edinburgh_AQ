@@ -122,10 +122,43 @@ def wind_rose_plot(filename = 'ExampleData'):
 
     pass
 
-def species_histogram(arg):
+def species_histogram(filename='ExampleData', species = 'None', verified = True,
+    num_bins = 50):
     """
-        Produces a histogram of concentration of a species.
+        Produces a histogram of concentrationof a given species.
+        Function IN:
+            species (REQUIRED, STRING):
+                The name of the species you want to plot.
+            filename(OPTIONAL, STRING):
+                The name of the raw data file, if left it just uses
+                example data
+            verfied(OPTIONAL, BOOLEAN):
+                Choose whether to plot just verfied data or all data.
+                Default = True
+            num_bins (OPTIONAL, INTEGER):
+                Choose the number of bins for the plot. Default = 50
     """
+    # Get the data for the species required. Also include the filename
+    # if the filename is provided - use example data if not.
+    # Also returns variable name (this might be changed slightly from user input)
+    species_data, variablename = source_AQ_data.select_one_variable(species, filename)
+
+    # If just using verfied data then purge unverified data
+    if verified:
+        species_data = source_AQ_data.purge_unverified(species_data, variablename)
+
+    data = [go.Histogram(x = species_data[variablename],
+        nbinsx = num_bins)]
+    layout = go.Layout(
+        title = 'Histogram of %s concentration at Edinburgh St Leonards' % variablename,
+        yaxis = dict(title = 'Frequency'),
+        xaxis = dict(title = variablename + ' ' + species_data.Unit[0]),
+        showlegend = False)
+
+    fig = go.Figure(data = data, layout = layout)
+    filename = 'Histogram of %s at Edinburgh St Leonards' % variablename
+    py.plot(fig, filename = filename)
+
     pass
 
 def monthly_box_plots(filename = 'ExampleData', species='None',
