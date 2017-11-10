@@ -14,7 +14,24 @@ import pandas as pd
 
 class AQ_limits(object):
     """
-        docstring for AQ_limits.
+        This returns information on air quality limits on a given chemical species.
+        It uses information gathered from DEFRA website and stored in csv file.
+        This also includes EU limits.
+        This class will return all information on the given species within a
+        dictionary which is within an object. For instance:
+            no2_limit = AQ_limits('no2')
+            no2_limit.limit_type.keys()
+                > returns all the different types of limit (eg UK_DAILY, EU_HOURLY)
+            no2_limit.limit_type['UK_HOURLY'].limit
+                > returns a number not to be exceeded
+            no2_limit.limit_type['UK_HOURLY'].unit
+                > returns the unit of the limit (eg ugm-3)
+            no2_limit.limit_type['UK_HOURLY'].exceedance
+                > returns information on how often this limit can be
+                 exceeded per year (eg 35 times per year)
+
+        Information here is static. To be updated, the csv file read in needs to
+        be updated.
     """
     def __init__(self, species):
         super(AQ_limits, self).__init__()
