@@ -5,11 +5,13 @@
 #   round_nearest(num_in)
 #   round_up(num_in)
 #   get_colours_rgb(num_colours)
+#  convert_to_pandas()
 #==============================================================================
 # Uses modules:
 # math
 import math
 import brewer2mpl
+import pandas as pd
 #==============================================================================
 
 def round_nearest(in_num, base = 10):
@@ -66,6 +68,38 @@ def get_colours_rgb(num_colours = 8):
         B = col[2]
         colour_array.append('rgb(%d,%d,%d)' % (R,G,B) )
     return colour_array
+
+
+def convert_to_pandas(data,date_and_time='None'):
+    """
+            Converts the given data into a pandas DataFrame for ease of use later.
+        Function IN:
+            data(REQUIRED, LIST or ARRAY(INT or FLOAT):
+                The data to be made into the pandas DataFrame. Usually a series
+                of concentration.
+            date_and_time(OPTIONAL, DATETIME OR STRING):
+                A time series corresponding to the data to be converted. Must be
+                in a format that pandas will understand. If left then no time data
+                will be used (this will limited analysis).
+        Fucntion OUT:
+            new_dataframe:
+                A pandas dataframe of the concentration. Ideally with the index
+                being datetime.
+    """
+
+    if date_and_time == 'None':
+        new_dataframe = pd.DataFrame(data)
+
+    else:
+
+        new_dataframe = pd.DataFrame({'Data':data,'date_and_time':date_and_time})
+
+        new_dataframe['date_and_time'] = pd.to_datetime(new_dataframe['date_and_time'])
+
+        new_dataframe.index = new_dataframe.pop('date_and_time')
+
+    return new_dataframe
+
 
 ## ============================================================================
 ## END OF PROGAM
