@@ -86,16 +86,17 @@ def convert_to_pandas(data,date_and_time='None'):
                 A pandas dataframe of the concentration. Ideally with the index
                 being datetime.
     """
-
+    # Test if a datetime is given, if not then don't include it!
     if date_and_time == 'None':
         new_dataframe = pd.DataFrame(data)
 
     else:
-
+        # Create the data frame with given variables
         new_dataframe = pd.DataFrame({'Data':data,'date_and_time':date_and_time})
-
+        # Make the datetime variable into a datetime format. This might not work
+        # and will depend on the way the input was - pandas will complain.
         new_dataframe['date_and_time'] = pd.to_datetime(new_dataframe['date_and_time'])
-
+        # Make the datetime variable the index of the DataFrame.
         new_dataframe.index = new_dataframe.pop('date_and_time')
 
     return new_dataframe
