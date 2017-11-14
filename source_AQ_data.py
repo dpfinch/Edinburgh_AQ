@@ -13,6 +13,7 @@ from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import os, sys
+import Edinburgh_AQ
 #==============================================================================
 def open_csv(filepath, skip_num_rows = 4):
     """
@@ -99,7 +100,8 @@ def select_one_variable(variablename = 'species', filename = 'ExampleData'):
 
     # If the filename is not set, then use the example data provided
     if filename == 'ExampleData':
-        filename = 'Example_Data/edinburgh_st_leonards_2015_2017.csv'
+        module_path = Edinburgh_AQ.__path__
+        filename = '%s/Example_Data/edinburgh_st_leonards_2015_2017.csv' % module_path[0]
         print "No file specified. Using data from: %s \n" % filename
 
     # Check to see whether file  & path exists
