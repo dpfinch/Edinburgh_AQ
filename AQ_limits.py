@@ -8,8 +8,9 @@
 #
 #==============================================================================
 # Uses modules:
-# pandas
+# pandas, Edinburgh_AQ
 import pandas as pd
+import Edinburgh_AQ
 #==============================================================================
 
 class AQ_limits(object):
@@ -46,7 +47,8 @@ class AQ_limits(object):
             package.
         """
         # Set file name & read in with pandas. Skip first row of first headings
-        filename = 'AQ_limits_database.csv'
+        module_path = Edinburgh_AQ.__path__[0]
+        filename = '%s/AQ_limits_database.csv' % module_path
         AQ_df = pd.read_csv(filename, skiprows = 1)
         # Make the species column the DataFrame index
         AQ_df.index = AQ_df.pop('SPECIES')
