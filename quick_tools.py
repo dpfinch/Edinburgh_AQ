@@ -101,6 +101,54 @@ def convert_to_pandas(data,date_and_time='None'):
 
     return new_dataframe
 
+class DEFRA_site_info(object):
+    """
+        Return an object which has the information about the DEFRA sites.
+        This information is from a csv file. Which in turn is made from
+        DEFRA_AURN_data_scrape.py
+        Will return object instances:
+            Latitude
+            Longitude
+            Altitude_metres
+            UK_AIR_ID
+            EU_Site_ID
+            Easting
+            Northing
+            Site_Code
+            Site_Address
+            Government_Region
+    """
+    def __init__(self, site_name = 'Edinburgh St Leonards', filename = 'None'):
+        super(DEFRA_site_info, self).__init__()
+        self.site_name = site_name
+        self.filename = filename
+        self.get_info()
+
+    def get_info(self):
+        # If the file is not set then use the standard - this is currently hard coded
+        # and therefore not useable for anyone else
+        if self.filename == 'None':
+            self.filename = '/home/dfinch/Documents/AQ_datasets/DEFRA_AURN_sites_info.csv'
+
+        # read the csv into a pandas DataFrame
+        df = pd.read_csv(self.filename)
+        # Make the site name the index
+        df.index = df.pop('Site Name')
+        # Get the site
+        site_info = df.loc[self.site_name]
+        self.Latitude = site_info.loc['Latitude']
+        self.Longitude = site_info.loc['Longitude']
+        self.Altitude_metres = site_info.loc['Altitude (metres)']
+        self.UK_AIR_ID = site_info.loc['UK-AIR ID']
+        self.EU_Site_ID = site_info.loc['EU Site ID']
+        self.Easting = site_info.loc['Easting']
+        self.Northing = site_info.loc['Northing']
+        self.Site_Code = site_info.loc['Site Code']
+        self.Site_Address = site_info.loc['Site Address']
+        self.Government_Region = site_info.loc['Government Region']
+        self.Site_Code = site_info.loc['Site Code']
+
+        return self
 
 ## ============================================================================
 ## END OF PROGAM
